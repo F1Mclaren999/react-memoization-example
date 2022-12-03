@@ -1,14 +1,43 @@
-import React, { useState } from 'react';
-import { render } from 'react-dom';
+import React, { useState, useEffect, StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import './style.css';
 
-const App = () => {
-  const [name] = useState('pingPong');
+function Movie({ name, cast, isMemo }) {
+  console.log(isMemo ? 'memoized' : 'movie');
   return (
-    <div id="main">
-      <h3>{name}</h3>
+    <div>
+      <div>Movie Name: {name}</div>
+      <div>Cast: {cast}</div>
     </div>
   );
-};
+}
 
-render(<App />, document.getElementById('root'));
+const MemoizedMovie = React.memo(Movie);
+
+function App() {
+  const [toggle, setToggle] = useState(true);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setToggle((toggle) => !toggle);
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div id="main">
+      <h3>List</h3>
+      <div>
+        <MemoizedMovie name={'PingPong'} cast={'Pingu'} isMemo={true} />
+        <Movie name={'PingPong'} cast={'Pingu'} isMemo={false} />
+      </div>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement);
+
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
